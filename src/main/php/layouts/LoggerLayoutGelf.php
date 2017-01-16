@@ -97,26 +97,7 @@ class LoggerLayoutGelf extends LoggerLayout {
      * @return string
      */
     public function format(LoggerLoggingEvent $event) {
-        $messageAsArray = array(
-            // Basic fields
-            'version'       => self::GELF_PROTOCOL_VERSION,
-            'host'          => $this->getHost(),
-            'short_message' => $this->getShortMessage($event),
-            'full_message'  => $this->getFullMessage($event),
-            'timestamp'     => $event->getTimeStamp(),
-            'level'         => $this->getGelfLevel($event->getLevel()),
-            // Additional fields
-            '_facility'     => $event->getLoggerName(),
-            '_thread'       => $event->getThreadName(),
-        );
-
-        if ($this->getLocationInfo()) {
-            $messageAsArray += $this->getEventLocationFields($event);
-        }
-
-        $messageAsArray += $this->getEventMDCFields($event);
-
-        return json_encode($messageAsArray);
+        return json_encode($this->getMessageAsArray($event));
     }
 
     /**
@@ -275,5 +256,32 @@ class LoggerLayoutGelf extends LoggerLayout {
         );
 
         return $message;
+    }
+
+    /**
+     * @param LoggerLoggingEvent $event
+     * @return array
+     */
+    protected function getMessageAsArray(LoggerLoggingEvent $event)
+    {
+        $messageAsArray = array(
+            // Basic fields
+            'version' => self::GELF_PROTOCOL_VERSION,
+            'host' => $this->getHost(),
+            'short_message' => $this->getShortMessage($event),
+            'full_message' => $this->getFullMessage($event),
+            'timestamp' => $event->getTimeStamp(),
+            'level' => $this->getGelfLevel($event->getLevel()),
+            // Additional fields
+            '_loggerName' => $event->getLoggerName(),
+            '_thread' => $event->getThreadName(),
+        );
+
+        if ($this->getLocationInfo()) {
+            $messageAsArray += $this->getEventLocationFields($event);
+        }
+
+        $messageAsArray += $this->getEventMDCFields($event);
+        return $messageAsArray;
     }
 }

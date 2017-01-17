@@ -55,7 +55,7 @@ class LoggerLayoutGelfTest extends PHPUnit_Framework_TestCase {
         $this->assertNotEmpty($encodedMessage["level"]);
 
         // Check additional fields
-        $this->assertNotEmpty($encodedMessage["_facility"]);
+        $this->assertNotEmpty($encodedMessage["_loggerName"]);
         $this->assertNotEmpty($encodedMessage["_thread"]);
 
         // Check additional location fields
